@@ -29,8 +29,8 @@ module RubyJmeter
         params[:port]     ||= uri.port unless URI.parse(URI::Parser.new.escape(params[:url])).scheme.nil?
         params[:protocol] ||= uri.scheme unless URI.parse(URI::Parser.new.escape(params[:url])).scheme.nil?
         params[:domain]   ||= uri.host
-        params[:path]     ||= uri.path && URI::decode(uri.path)
-        params[:params]   ||= uri.query && URI::decode(uri.query)
+        params[:path]     ||= uri.path && URI.decode_www_form_component(uri.path)
+        params[:params]   ||= uri.query && URI.decode_www_form_component(uri.query)
       end
       params.delete(:url)
     end
