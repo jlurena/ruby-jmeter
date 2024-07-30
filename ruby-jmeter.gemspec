@@ -11,9 +11,10 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Ruby based DSL for writing JMeter test plans}
   gem.summary       = %q{Ruby based DSL for writing JMeter test plans}
   gem.homepage      = 'http://flood-io.github.io/ruby-jmeter/'
-  gem.add_dependency('rest-client')
-  gem.add_dependency('nokogiri')
-  gem.add_runtime_dependency('json-jruby') if RUBY_PLATFORM == 'java'
+  gem.add_runtime_dependency 'tdigest', '~> 0.2.1'
+  gem.add_runtime_dependency 'json-jruby' if RUBY_PLATFORM == 'java'
+  gem.add_runtime_dependency 'nokogiri'
+  gem.add_runtime_dependency 'rest-client'
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   << 'flood'

@@ -38,9 +38,15 @@ module RubyJmeter
       file(params)
       logger.warn 'Test executing locally ...'
 
-      cmd = "#{params[:path] ? File.join(params[:path], 'jmeter') : 'jmeter'} #{"-n" unless params[:gui] } -t #{params[:file]} -j #{params[:log] ? params[:log] : 'jmeter.log' } -l #{params[:jtl] ? params[:jtl] : 'jmeter.jtl' } #{build_properties(params[:properties]) if params[:properties]}"
+      gui_mode = params[:gui].nil? ? '' : '-n'
+      jmeter_path = params[:path].nil? ? 'jmeter' : File.join(params[:path])
+      log_file = params.fetch(:log, 'jmeter.log')
+      jtl_file = params.fetch(:jtl, 'jmeter.jtl')
+      properties = params[:properties].nil? ? "" : build_properties(params[:properties]) if params[:properties]
+
+      cmd = "#{jmeter_path} #{gui_mode} -t #{params[:file]} -j #{log_file} -l #{jtl_file} #{properties}"
       logger.debug cmd if params[:debug]
-      Open3.popen2e("#{cmd}") do |stdin, stdout_err, wait_thr|
+      Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         while line = stdout_err.gets
           logger.debug line.chomp if params[:debug]
         end
@@ -48,7 +54,9 @@ module RubyJmeter
         exit_status = wait_thr.value
         abort "FAILED !!! #{cmd}" unless exit_status.success?
       end
-      logger.info "Local Results at: #{params[:jtl] ? params[:jtl] : 'jmeter.jtl'}"
+      logger.info "Local Results at: #{jtl_file}"
+
+      Report::Summary.new(jtl_file)
     end
 
     private

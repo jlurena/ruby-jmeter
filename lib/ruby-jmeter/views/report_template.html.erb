@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Comparison Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .summary-box {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: center;
+      word-wrap: break-word;
+    }
+    .header-row td {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .bad {
+      background-color: #ffcccc;
+    }
+    .tooltip {
+      position: relative;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 150px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 100%;
+      left: 50%;
+      margin-left: -75px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="summary-box" id="summary-box"><b>Cohen's D value:</b> <%= @comparator.cohens_d %>.<br><b>Summary:</b> <%= @comparator.human_rating %></div>
+  <table>
+    <tr class="header-row">
+      <% ['Label', "Cohen's D", "T Statistics", 'Requests', 'Errors', 'Error %', 'Min' 'Max', 'Avg', 'SD', 'P10', 'P50', 'P95'].each do |header| %>
+        <td class="tooltip"><%= header %>
+          <span class="tooltiptext"><%= "Description for #{header}" %></span>
+        </td>
+      <% end %>
+    </tr>
+    <% @reports.each_with_index do |report, index| %>
+      <tr>
+        <td><%= index == 0 ? "Base Metric" : "Test Metric" %></td>
+        <td><%= sprintf('%.2f', @comparator.cohens_d) %></td>
+        <td><%= sprintf('%.2f', @comparator.t_statistic) %></td>
+        <td><%= report.total_requests %></td>
+        <td class="<%= 'bad' if report.total_errors > 0 %>"><%= report.total_errors %></td>
+        <td class="<%= 'bad' if report.error_percentage > 0.0 %>"><%= sprintf('%.2f', report.error_percentage) %></td>
+        <td><%= report.min %></td>
+        <td><%= report.max %></td>
+        <td><%= sprintf('%.2f', report.avg) %></td>
+        <td><%= sprintf('%.2f', report.std) %></td>
+        <td><%= report.p10 %></td>
+        <td><%= report.p50 %></td>
+        <td><%= report.p95 %></td>
+      </tr>
+    <% end %>
+  </table>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const summaryBox = document.getElementById('summary-box');
+      const cohenValue = <%= @comparator.cohens_d %>;
+      let color;
+
+      if (cohenValue === 0) {
+        color = 'gray';
+      } else if (cohenValue > 0 && cohenValue <= 2) {
+        // Calculate color gradient from light yellow to red
+        let red = Math.min(Math.max(255, 255 - cohenValue * 127.5), 255);
+        let green = Math.min(Math.max(255, 255 - cohenValue * 127.5), 255);
+        color = `rgb(${red}, ${green}, 0)`;
+      } else {
+        color = 'red';
+      }
+
+      summaryBox.style.backgroundColor = color;
+    });
+  </script>
+</body>
+</html>

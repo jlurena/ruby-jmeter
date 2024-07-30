@@ -25,3 +25,4 @@ Dir.glob(lib + '/ruby-jmeter/plugins/**/*.rb').each do |file|
 end
 
 require 'ruby-jmeter/dsl'
+require "ruby-jmeter/report"
