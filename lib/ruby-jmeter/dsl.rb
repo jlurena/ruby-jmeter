@@ -38,13 +38,12 @@ module RubyJmeter
       file(params)
       logger.warn 'Test executing locally ...'
 
-      gui_mode = params[:gui].nil? ? '' : '-n'
       jmeter_path = params[:path].nil? ? 'jmeter' : File.join(params[:path])
       log_file = params.fetch(:log, 'jmeter.log')
       jtl_file = params.fetch(:jtl, 'jmeter.jtl')
       properties = params[:properties].nil? ? "" : build_properties(params[:properties]) if params[:properties]
 
-      cmd = "#{jmeter_path} #{gui_mode} -t #{params[:file]} -j #{log_file} -l #{jtl_file} #{properties}"
+      cmd = "#{jmeter_path} -t #{params[:file]} -j #{log_file} -l #{jtl_file} #{properties}"
       logger.debug cmd if params[:debug]
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         while line = stdout_err.gets
