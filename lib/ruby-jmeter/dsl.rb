@@ -43,7 +43,7 @@ module RubyJmeter
       jtl_file = params.fetch(:jtl, 'jmeter.jtl')
       properties = params[:properties].nil? ? "" : build_properties(params[:properties]) if params[:properties]
 
-      cmd = "#{jmeter_path} -t #{params[:file]} -j #{log_file} -l #{jtl_file} #{properties}"
+      cmd = "#{jmeter_path} -n -t #{params[:file]} -j #{log_file} -l #{jtl_file} #{properties}"
       logger.debug cmd if params[:debug]
       Open3.popen2e(cmd) do |stdin, stdout_err, wait_thr|
         while line = stdout_err.gets
