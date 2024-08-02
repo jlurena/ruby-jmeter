@@ -9,11 +9,11 @@ module RubyJmeter::Report
     end
 
     def pass?(cohens_d_limit = 0, raise_error = false)
-      result = cohens_d >= cohens_d_limit
-      if result && raise_error
+      passes = cohens_d <= cohens_d_limit
+      if !passes && raise_error
         raise "Failed Cohen's D. Expected:#{cohens_d_limit}, Actual:#{cohens_d}"
       end
-      result
+      passes
     end
 
     private
